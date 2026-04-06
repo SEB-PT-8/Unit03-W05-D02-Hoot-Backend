@@ -30,4 +30,80 @@ router.get('/', async (req,res)=>{
 })
 
 
+router.get('/:id', async (req,res)=>{
+    try{
+        const foundHoot = await Hoot.findById(req.params.id).populate('author')
+        res.json(foundHoot)
+
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json(err)
+
+    }
+})
+
+
+
+router.put('/:id', verifyToken,async (req,res)=>{
+    try{
+        // Does this tweet belong to the logged in user
+        const foundHoot = await Hoot.findById(req.params.id)
+
+  
+        if(!foundHoot.author.equals(req.user._id)){
+            return res.status(403).json({err:'Unauthorized upate on this Hoot'})
+        }
+
+        const updatedHoot = await Hoot.findByIdAndUpdate(req.params.id,req.body, {new: true})
+        res.json(updatedHoot)
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json(err)
+
+    }
+})
+
+
+
+router.delete('/:id', verifyToken,async (req,res)=>{
+    try{
+        // Does this tweet belong to the logged in user
+        const foundHoot = await Hoot.findById(req.params.id)
+
+  
+        if(!foundHoot.author.equals(req.user._id)){
+            return res.status(403).json({err:'Unauthorized delete on this Hoot'})
+        }
+
+        const updatedHoot = await Hoot.findByIdAndDelete(req.params.id)
+        res.json(updatedHoot)
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json(err)
+
+    }
+})
+
+
+router.post('/:id/comments', verifyToken,async (req,res)=>{
+    try{
+        const foundHoot = await Hoot.findById(req.params.id)
+        .populate('comments.author')
+        req.body.author = req.user._id
+        foundHoot.comments.push(req.body)
+        await foundHoot.save()
+
+        res.json(foundHoot)
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json(err)
+
+    }
+})
+
+
 module.exports = router
