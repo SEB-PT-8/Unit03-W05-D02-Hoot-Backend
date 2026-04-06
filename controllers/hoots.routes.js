@@ -32,7 +32,7 @@ router.get('/', async (req,res)=>{
 
 router.get('/:id', async (req,res)=>{
     try{
-        const foundHoot = await Hoot.findById(req.params.id).populate('author')
+        const foundHoot = await Hoot.findById(req.params.id).populate('author comments.author')
         res.json(foundHoot)
 
     }
