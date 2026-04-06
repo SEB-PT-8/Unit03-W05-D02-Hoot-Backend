@@ -39,7 +39,6 @@ const hootSchema = new mongoose.Schema({
 {timestamps:true})
 
 
-
 // model
 const Hoot = mongoose.model('Hoot',hootSchema)
 
